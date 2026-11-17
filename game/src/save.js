@@ -7,6 +7,8 @@ export class Save {
     this.game = game;
     this.loaded = false;
     this.lastSave = 0;
+    // flush a final save when the tab closes so progress isn't lost
+    addEventListener('beforeunload', () => { if (game.state !== 'menu') this.save(); });
   }
 
   load() {

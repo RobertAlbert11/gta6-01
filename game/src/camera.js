@@ -20,11 +20,15 @@ export class Camera {
     const k = 1 - Math.pow(0.0001, dt);
     this.x += (tx - this.x) * k; this.y += (ty - this.y) * k;
     const tz = p.currentVehicle ? 0.72 : 1.0;
-    this.zoom += (tz - this.zoom) * Math.min(1, dt * 3);
+    // zoom out slightly at high speed for better visibility
+    const speedZoom = p.currentVehicle ? Math.max(0.6, 0.72 - speed * 0.0004) : 1.0;
+    this.zoom += (Math.min(tz, speedZoom) - this.zoom) * Math.min(1, dt * 3);
     this.shake = Math.max(0, this.shake - dt * 30);
     const sx = (Math.random() - 0.5) * this.shake, sy = (Math.random() - 0.5) * this.shake;
     const half = 0.5 * Math.max(this.canvasW(), this.canvasH());
-    this.x = Math.max(half, Math.min(WORLD_W - half, this.x + sx * 0.1));
-    this.y = Math.max(half, Math.min(WORLD_H - half, this.y + sy * 0.1));
+    this.x = Math.max(half, Math.min(WORLD_W - half, this.x));
+    this.y = Math.max(half, Math.min(WORLD_H - half, this.y));
+    // apply shake after clamping so it's visible even at world edges
+    this.x += sx; this.y += sy;
   }
 }

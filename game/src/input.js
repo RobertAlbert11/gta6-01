@@ -15,8 +15,10 @@ export class Input {
     });
     addEventListener('keyup', (e) => this.keys.delete(e.key.toLowerCase()));
     addEventListener('mousemove', (e) => { this.mouse.x = e.clientX; this.mouse.y = e.clientY; });
-    addEventListener('mousedown', () => { this.mouse.down = true; this._fire = true; });
-    addEventListener('mouseup', () => { this.mouse.down = false; });
+    addEventListener('mousedown', (e) => { if (e.button === 0) { this.mouse.down = true; this._fire = true; } });
+    addEventListener('mouseup', (e) => { if (e.button === 0) this.mouse.down = false; });
+    // release all keys on blur so sprint/drive don't stick when tabbing away
+    addEventListener('blur', () => { this.keys.clear(); this.mouse.down = false; });
     addEventListener('contextmenu', (e) => e.preventDefault());
   }
   axis() {

@@ -44,7 +44,10 @@ export class Activities {
       }
     } else {
       this.raceTimer -= dt;
-      if (this.raceTimer <= 0) this.endRace(false);
+      // win when player reaches the checkpoint
+      if (this.raceEnd && Math.hypot(g.player.x - this.raceEnd.x, g.player.y - this.raceEnd.y) < 60) {
+        this.endRace(true);
+      } else if (this.raceTimer <= 0) this.endRace(false);
     }
   }
 
@@ -65,7 +68,12 @@ export class Activities {
     this.raceActive = true;
     this.raceTimer = 22;
     const a = Math.random() * Math.PI * 2;
-    this.raceEnd = { x: x + Math.cos(a) * 1400, y: y + Math.sin(a) * 1400 };
+    // clamp checkpoint inside the map so races are always finishable
+    const ex = x + Math.cos(a) * 1400, ey = y + Math.sin(a) * 1400;
+    this.raceEnd = {
+      x: Math.max(2 * TILE, Math.min((GRID_W - 2) * TILE, ex)),
+      y: Math.max(2 * TILE, Math.min((GRID_H - 2) * TILE, ey)),
+    };
     this.game.hud.toast('Street race! Reach the checkpoint!');
     this.game.world.markers.push({ x: this.raceEnd.x, y: this.raceEnd.y, color: '#4fc96f' });
   }

@@ -14,6 +14,8 @@ export class Audio {
   start() {
     try {
       this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      // browsers start contexts suspended until a user gesture — resume if needed
+      if (this.ctx.state === 'suspended') this.ctx.resume();
       this.enabled = true;
       this.master = this.ctx.createGain();
       this.master.gain.value = 0.35;
@@ -73,6 +75,10 @@ export class Audio {
   }
 
   cash() { this.blip(880, 0.08, 'square', 0.12); setTimeout(() => this.blip(1320, 0.12, 'square', 0.12), 90); }
+
+  crash(intensity = 1) { this.noiseBurst(0.2, Math.min(0.35, 0.12 + intensity * 0.15), 900); this.blip(90, 0.12, 'sawtooth', 0.15); }
+
+  skid() { this.noiseBurst(0.15, 0.1, 3200); }
 
   pickup() { this.blip(660, 0.06, 'triangle', 0.12); setTimeout(() => this.blip(990, 0.1, 'triangle', 0.1), 70); }
 

@@ -37,9 +37,14 @@ export class NightSky {
       ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + 40, sy + 14); ctx.stroke();
     }
-    // crescent moon
+    // crescent moon with a soft glow halo
     ctx.globalAlpha = Math.min(0.9, dark * 0.85);
     const mx = canvas.width * 0.82, my = canvas.height * 0.1;
+    const glow = ctx.createRadialGradient(mx, my, 10, mx, my, 60);
+    glow.addColorStop(0, 'rgba(255,224,144,0.35)');
+    glow.addColorStop(1, 'rgba(255,224,144,0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath(); ctx.arc(mx, my, 60, 0, 7); ctx.fill();
     ctx.fillStyle = '#ffe090';
     ctx.beginPath(); ctx.arc(mx, my, 22, 0, 7); ctx.fill();
     ctx.fillStyle = '#1a1e30';  // overlap to carve crescent

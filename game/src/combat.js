@@ -98,6 +98,8 @@ export class Combat {
             e.dead = true;
             g.missions.eliminateCount++;
             g.respect += 5;
+            g.cash += 25;
+            g.audio.pickup();
           }
           b.life = 0;
           break;
@@ -137,6 +139,11 @@ export class Combat {
       ctx.beginPath(); ctx.ellipse(e.x + 2, e.y + 3, 7, 6, 0, 0, 7); ctx.fill();
       ctx.fillStyle = e.color;
       ctx.beginPath(); ctx.arc(e.x, e.y, 7, 0, 7); ctx.fill();
+      // health bar when damaged
+      if (e.health < 40) {
+        ctx.fillStyle = '#300'; ctx.fillRect(e.x - 9, e.y - 14, 18, 3);
+        ctx.fillStyle = '#e34'; ctx.fillRect(e.x - 9, e.y - 14, 18 * Math.max(0, e.health / 40), 3);
+      }
       // little gun
       ctx.strokeStyle = '#222'; ctx.lineWidth = 2;
       ctx.beginPath();

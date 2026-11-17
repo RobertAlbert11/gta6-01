@@ -8,7 +8,7 @@ export class Effects {
     this.scrnColor = '';
   }
 
-  _push(p) { if (this.particles.length < 600) this._push(p); }
+  _push(p) { if (this.particles.length < 600) this.particles.push(p); }
 
   sparkBurst(x, y, n = 14) {
     for (let i = 0; i < n; i++) {
@@ -78,5 +78,10 @@ export class Effects {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.globalAlpha = 1;
     }
+  }
+
+  // radial blood/impact splat that lingers as a decal
+  splat(x, y, color = 'rgba(140,20,20,0.5)', size = 10) {
+    this._push({ x, y, vx: 0, vy: 0, life: 6, maxLife: 6, color, size });
   }
 }

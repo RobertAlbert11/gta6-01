@@ -48,12 +48,15 @@ export class DayNight {
     }
     ctx.restore();
     this.sky.drawNight(ctx, canvas, this.clock);
-    // clock readout top-right under wanted stars
+    // clock readout top-right under wanted stars (dimmed by darkness for readability)
     ctx.save();
     ctx.font = '14px "Segoe UI", Arial';
     ctx.textAlign = 'right';
-    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.fillStyle = `rgba(255,255,255,${0.45 + d * 0.35})`;
     ctx.fillText(this.timeLabel(), canvas.width - 24, 60);
     ctx.restore();
   }
+
+  // rush hours: more traffic, more pedestrians
+  isRushHour() { return (this.clock >= 7.5 && this.clock < 9.5) || (this.clock >= 16.5 && this.clock < 18.5); }
 }

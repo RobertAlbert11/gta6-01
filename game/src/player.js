@@ -89,8 +89,13 @@ export class Player {
     const v = this.currentVehicle;
     if (v) { v.driver = null; v.vx *= 0.2; v.vy *= 0.2; }
     this.currentVehicle = null;
-    this.x += Math.cos(v ? v.dir + Math.PI / 2 : 0) * 26;
-    this.y += Math.sin(v ? v.dir + Math.PI / 2 : 0) * 26;
+    // step out to the side; if that spot is inside a building, try the other side
+    const side = (v ? v.dir + Math.PI / 2 : 0);
+    let ex = this.x + Math.cos(side) * 26, ey = this.y + Math.sin(side) * 26;
+    if (g.world.collideRect({ x: ex - PLAYER_R, y: ey - PLAYER_R, w: PLAYER_R * 2, h: PLAYER_R * 2 })) {
+      ex = this.x - Math.cos(side) * 26; ey = this.y - Math.sin(side) * 26;
+    }
+    this.x = ex; this.y = ey;
     g.hud.toast('On foot');
   }
 

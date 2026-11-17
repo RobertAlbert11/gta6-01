@@ -58,7 +58,13 @@ export class Minimap {
     for (const cop of g.police.cars) {
       if (cop.driver === 'player') continue;
       const sx = (cop.x - px) * scale + SIZE / 2, sy = (cop.y - py) * scale + SIZE / 2;
-      if (sx < 0 || sx > SIZE || sy < 0 || sy > SIZE) continue;
+      // clamp edge blips so offscreen cops are still visible as wanted-level hints
+      if (sx < 0 || sx > SIZE || sy < 0 || sy > SIZE) {
+        if (g.police.level < 2) continue;
+        c.fillStyle = 'rgba(75,123,255,0.6)';
+        c.beginPath(); c.arc(Math.max(4, Math.min(SIZE - 4, sx)), Math.max(4, Math.min(SIZE - 4, sy)), 3, 0, 7); c.fill();
+        continue;
+      }
       c.fillStyle = '#4b7bff';
       c.beginPath(); c.arc(sx, sy, 3.5, 0, 7); c.fill();
     }

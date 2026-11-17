@@ -13,6 +13,11 @@ export class Hud {
     if (this.toasts.length > 4) this.toasts.shift();
   }
 
+  // time-based flash decay instead of assuming 60fps frame delta
+  update(dt) {
+    if (this.flash > 0) this.flash -= dt;
+  }
+
   flashWanted() { this.flash = 1.2; }
 
   wasted() {
@@ -53,7 +58,6 @@ export class Hud {
       ctx.font = 'bold 28px "Segoe UI", Arial';
       ctx.textAlign = 'right';
       if (this.flash > 0) {
-        this.flash -= 0.016;
         if (Math.floor(this.flash * 8) % 2 === 0) {
           ctx.fillStyle = '#ff4b4b';
           ctx.fillText('★'.repeat(Math.max(stars, 1)) + '☆'.repeat(5 - Math.max(stars, 1)), w - 24, 40);
@@ -90,8 +94,14 @@ export class Hud {
     if (g.player.currentVehicle) {
       const v = g.player.currentVehicle;
       const spd = Math.round(Math.hypot(v.vx, v.vy) * 1.6);
-      ctx.fillStyle = '#cfd8ff';
+      // fuel bar when in a vehicle
+      const fuel = Math.max(0, Math.min(1, (v.fuel ?? 1)));
+      ctx.fillStyle = fuel < 0.2 ? '#e84f4f' : '#cfd8ff';
       ctx.fillText(`${v.brand} ${v.model} — ${spd} km/h`, 20, 110);
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillRect(20, 116, 120, 6);
+      ctx.fillStyle = fuel < 0.2 ? '#e84f4f' : '#f0c040';
+      ctx.fillRect(20, 116, 120 * fuel, 6);
     }
     ctx.restore();
 

@@ -82,6 +82,7 @@ function frame(now) {
     game.combat.update(dt);
     game.effects.update(dt);
     game.audio.update();
+    game.hud.update(dt);
     game.save.autosave();
   }
   game.camera.update(dt, game.state === 'playing');
