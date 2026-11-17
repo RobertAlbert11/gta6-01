@@ -1,3 +1,4 @@
+// Authored by Solaris City agent (gta6-01)
 // minimap.js — bottom-left canvas minimap: roads, player arrow, police dots, mission marker.
 import { TILE, GRID_W, GRID_H, WORLD_W, WORLD_H } from './world.js';
 

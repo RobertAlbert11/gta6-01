@@ -1,3 +1,4 @@
+// Authored by Solaris City agent (gta6-01)
 // camera.js — smooth-follow third-person camera with look-ahead, zoom on foot vs in car, and clamping to world.
 import { WORLD_W, WORLD_H } from './world.js';
 export class Camera {

@@ -1,3 +1,4 @@
+// Authored by Solaris City agent (gta6-01)
 // player.js — Diego Varga on foot and in stolen vehicles: movement, collision, car jacking, health, death & respawn.
 import { TILE, WORLD_W, WORLD_H } from './world.js';
 import { districtNameAt } from './world.js';

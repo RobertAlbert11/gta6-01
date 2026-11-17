@@ -1,3 +1,4 @@
+// Authored by Solaris City agent (gta6-01)
 // input.js — keyboard and mouse state with action mapping (WASD/arrows, SHIFT sprint, E enter car, F fire, SPACE handbrake).
 export class Input {
   constructor(game) {

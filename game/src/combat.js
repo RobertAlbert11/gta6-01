@@ -1,3 +1,4 @@
+// Authored by Solaris City agent (gta6-01)
 // combat.js — pistol shooting: aim with mouse, fire with F or click, hit peds/cops, ammo & pickups.
 export class Combat {
   constructor(game) {

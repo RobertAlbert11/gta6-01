@@ -1,3 +1,4 @@
+// Authored by Solaris City agent (gta6-01)
 // world.js — the city of Solaris City: road grid, blocks, buildings, beach, park, props and static collision.
 export const TILE = 40;                 // world units per tile
 export const GRID_W = 120, GRID_H = 120; // 4800 x 4800 world

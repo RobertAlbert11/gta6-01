@@ -1,3 +1,4 @@
+// Authored by Solaris City agent (gta6-01)
 // effects.js — particle bursts: sparks, blood, bullet tracers, camera shake, flashbang.
 export class Effects {
   constructor(game) {

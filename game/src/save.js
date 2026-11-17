@@ -1,3 +1,4 @@
+// Authored by Solaris City agent (gta6-01)
 // save.js — localStorage autosave of cash, respect, score, completed missions and stats.
 const KEY = 'solaris-city-save-v1';
 

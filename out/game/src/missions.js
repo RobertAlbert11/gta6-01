@@ -1,3 +1,4 @@
+// Authored by Solaris City agent (gta6-01)
 // missions.js — story arc (4 acts, 10+ missions), objectives, success/fail, money & respect rewards.
 import { TILE, WORLD_W, WORLD_H } from './world.js';
 

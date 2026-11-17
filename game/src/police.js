@@ -1,3 +1,4 @@
+// Authored by Solaris City agent (gta6-01)
 // police.js — wanted level, crimes, police cars that chase the player, busted logic.
 import { TILE } from './world.js';
 

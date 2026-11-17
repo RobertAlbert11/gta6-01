@@ -1,3 +1,4 @@
+// Authored by Solaris City agent (gta6-01)
 // nightsky.js — star field and crescent moon for night hours.
 export class NightSky {
   constructor(game) {

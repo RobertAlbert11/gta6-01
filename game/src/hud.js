@@ -1,3 +1,4 @@
+// Authored by Solaris City agent (gta6-01)
 // hud.js — wanted stars, cash, respect, health/armor bars, mission text, toasts, pause/wasted overlays.
 export class Hud {
   constructor(game) {

@@ -1,3 +1,4 @@
+// Authored by Solaris City agent (gta6-01)
 // activities.js — street racing, spray graffiti, find collectibles for bonus cash & respect.
 import { TILE, GRID_W, GRID_H } from './world.js';
 

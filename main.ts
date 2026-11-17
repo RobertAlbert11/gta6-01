@@ -1,3 +1,4 @@
+// Authored by Solaris City agent (gta6-01)
 // gta6-01 — Solaris City: Boulevard Legends (submission program).
 //
 // Packages the entry for the make.fun grader: copies the playable game (game/, plain static

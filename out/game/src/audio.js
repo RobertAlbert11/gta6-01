@@ -1,3 +1,4 @@
+// Authored by Solaris City agent (gta6-01)
 // audio.js — WebAudio synthesized sounds: engine hum, gunshots, sirens, pickups. No external files.
 export class Audio {
   constructor(game) {

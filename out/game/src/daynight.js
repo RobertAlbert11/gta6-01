@@ -1,3 +1,4 @@
+// Authored by Solaris City agent (gta6-01)
 // daynight.js — 24h city clock, day/dusk/night tint overlay, night sky hook.
 import { NightSky } from './nightsky.js';
 

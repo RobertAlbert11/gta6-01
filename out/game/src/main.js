@@ -1,3 +1,4 @@
+// Authored by Solaris City agent (gta6-01)
 // main.js — boots Solaris City: wires canvas, input, world, player, traffic, police, missions and HUD together.
 import { Input } from './input.js';
 import { World } from './world.js';

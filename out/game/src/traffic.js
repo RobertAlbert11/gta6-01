@@ -1,3 +1,4 @@
+// Authored by Solaris City agent (gta6-01)
 // traffic.js — NPC cars driving the road grid and pedestrians walking the sidewalks.
 import { TILE, WORLD_W, WORLD_H } from './world.js';
 
