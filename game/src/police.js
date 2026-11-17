@@ -18,6 +18,8 @@ export class Police {
     this.heat = 0;           // progress within a star, decays when hidden
     this.spawnTimer = 0;
     this.busted = false;
+    this.roadblocks = [];    // spawned at wanted 3+
+    this.rbTimer = 0;
   }
 
   reportCrime(type, x, y) {
@@ -50,6 +52,30 @@ export class Police {
       this.spawnTimer = 2.5 - this.level * 0.3;
       this.spawnCop();
     }
+
+    // roadblocks ahead of the player at wanted 3+
+    if (this.level >= 3) {
+      this.rbTimer -= dt;
+      if (this.rbTimer <= 0 && this.roadblocks.length < 3) {
+        this.rbTimer = 10;
+        this.spawnRoadblock(px, py);
+      }
+    } else if (this.roadblocks.length) {
+      this.roadblocks = [];
+    }
+    this.roadblocks = this.roadblocks.filter(rb => {
+      const far = Math.hypot(rb.x - px, rb.y - py) > 1500;
+      // hitting a barrier at speed stops you hard and busts it
+      if (Math.abs(px - rb.x) < 30 && Math.abs(py - rb.y) < (rb.horiz ? 52 : 26)) {
+        if (p.currentVehicle && Math.hypot(p.currentVehicle.vx, p.currentVehicle.vy) > 40) {
+          p.currentVehicle.vx *= 0.15; p.currentVehicle.vy *= 0.15;
+          g.effects.sparkBurst(px, py);
+          g.camera.shake = 10;
+          return false; // barrier smashed
+        }
+      }
+      return !far;
+    });
 
     // chase AI: drive straight at player, simple avoid-free pursuit
     const px = p.x, py = p.y;
@@ -97,6 +123,22 @@ export class Police {
     }
   }
 
+  // barrier across the nearest road, ~500u ahead of the player along their travel axis
+  spawnRoadblock(px, py) {
+    const horiz = Math.random() < 0.5;
+    const dist = 400 + Math.random() * 250;
+    const lanes = [];
+    for (let l = TILE * 4; l < WORLD_LIMIT; l += TILE * 8) lanes.push(l);
+    const lane = lanes.reduce((a, b) => Math.abs(b - py) < Math.abs(a - py) ? b : a);
+    const along = Math.max(TILE * 4, Math.min(WORLD_LIMIT - TILE * 4, (horiz ? px : px) + dist));
+    const alongY = Math.max(TILE * 4, Math.min(WORLD_LIMIT - TILE * 4, py + dist));
+    this.roadblocks.push({
+      horiz, x: horiz ? along : lane, y: horiz ? lane : alongY,
+      w: horiz ? 26 : 90, h: horiz ? 90 : 26,
+    });
+    this.game.hud.toast('Roadblock ahead!');
+  }
+
   bustedCheck() { return this.busted && this.level > 0; }
 
   spawnCop() {
@@ -123,10 +165,33 @@ export class Police {
       if (Math.abs(c.x - cam.x) > cam.canvasW() + 80 || Math.abs(c.y - cam.y) > cam.canvasH() + 80) continue;
       drawCop(ctx, c);
     }
+    for (const rb of this.roadblocks) {
+      if (Math.abs(rb.x - cam.x) > cam.canvasW() + 100 || Math.abs(rb.y - cam.y) > cam.canvasH() + 100) continue;
+      drawRoadblock(ctx, rb);
+    }
   }
 }
 
 const WORLD_LIMIT = TILE * 120;
+
+function drawRoadblock(ctx, rb) {
+  ctx.save();
+  // flashing beacon glow
+  const on = Math.floor(performance.now() / 250) % 2 === 0;
+  ctx.fillStyle = on ? 'rgba(255,60,60,0.9)' : 'rgba(60,110,255,0.9)';
+  ctx.fillRect(rb.x - rb.w / 2 - 6, rb.y - rb.h / 2 - 6, rb.w + 12, rb.h + 12);
+  // striped barriers
+  ctx.fillStyle = '#e86a1a';
+  ctx.fillRect(rb.x - rb.w / 2, rb.y - rb.h / 2, rb.w, rb.h);
+  ctx.fillStyle = '#f5f0e6';
+  const stripes = Math.floor((rb.horiz ? rb.h : rb.w) / 12);
+  for (let i = 0; i < stripes; i++) {
+    if (i % 2 === 0) continue;
+    if (rb.horiz) ctx.fillRect(rb.x - rb.w / 2, rb.y - rb.h / 2 + i * 12, rb.w, 12);
+    else ctx.fillRect(rb.x - rb.w / 2 + i * 12, rb.y - rb.h / 2, 12, rb.h);
+  }
+  ctx.restore();
+}
 
 function drawCop(ctx, c) {
   ctx.save();

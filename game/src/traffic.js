@@ -6,7 +6,60 @@ const COLORS = ['#c94f4f', '#4f7fc9', '#c9b74f', '#5fc97a', '#c98f4f', '#9a5fc9'
 const BRANDS = ['Vulcan', 'Marlin', 'Cheetah', 'Duster', 'Sable', 'Comet', 'Pelican', 'Ravager'];
 const PED_SKINS = ['#e8b04a', '#7fc9e8', '#e87fb0', '#9ae87f', '#c9c9c9'];
 
+// Simple arcade car physics: throttle along facing, steering turns the car,
+// handbrake reduces grip so the car drifts (velocity lags behind heading).
+function driveCar(dt, ax, ay, handbrake) {
+  const accel = 420;
+  const maxSpeed = 340;
+  const turnRate = 3.2;
+  const grip = handbrake ? 1.8 : 6.5;
+
+  const forwardX = Math.cos(this.dir), forwardY = Math.sin(this.dir);
+  // project input axis onto car-forward (throttle) and car-right (steering)
+  const throttleProj = ax * forwardX + ay * forwardY;
+  const steerProj = ax * -forwardY + ay * forwardX;
+
+  const speed = Math.hypot(this.vx, this.vy);
+  let sp = speed;
+
+  if (throttleProj !== 0) {
+    sp += throttleProj * accel * dt;
+    sp = Math.max(-120, Math.min(maxSpeed, sp));
+  } else {
+    // engine braking
+    sp *= 1 - 1.2 * dt;
+  }
+
+  // steering: only when moving; reversed when driving backwards
+  if (Math.abs(sp) > 5) {
+    this.dir += steerProj * turnRate * dt * (sp >= 0 ? 1 : -1);
+  }
+
+  // velocity blends toward heading; low grip (handbrake) makes it lag => drift
+  const newFx = Math.cos(this.dir), newFy = Math.sin(this.dir);
+  const targetVx = newFx * sp, targetVy = newFy * sp;
+  const k = Math.min(1, grip * dt);
+  this.vx += (targetVx - this.vx) * k;
+  this.vy += (targetVy - this.vy) * k;
+  // extra push along heading when throttling (response at low speed)
+  if (throttleProj !== 0) {
+    const driveF = throttleProj >= 0 ? 1 : -1;
+    this.vx += newFx * throttleProj * accel * dt * 0.35 * driveF;
+    this.vy += newFy * throttleProj * accel * dt * 0.35 * driveF;
+  }
+
+  if (handbrake) {
+    // handbrake scrubs speed
+    this.vx *= 1 - 0.9 * dt;
+    this.vy *= 1 - 0.9 * dt;
+  }
+
+  this.x += this.vx * dt;
+  this.y += this.vy * dt;
+}
+
 export class Traffic {
+
   constructor(game) {
     this.game = game;
     this.vehicles = [];
@@ -33,7 +86,7 @@ export class Traffic {
       vy: horiz ? 0 : dirSign * speed,
       dir: horiz ? (dirSign > 0 ? 0 : Math.PI) : (dirSign > 0 ? Math.PI / 2 : -Math.PI / 2),
       speed, driver: 'npc', horiz, dirSign, w: 34, h: 16,
-      bonk: 0,
+      bonk: 0, drive: driveCar,
     };
     this.vehicles.push(v);
     return v;
@@ -116,7 +169,7 @@ export class Traffic {
     const t = g.player[horiz ? 'y' : 'x'] + (Math.random() * 1600 - 800);
     const speed = 90 + Math.random() * 70;
     return {
-      ...v, kind: 'traffic', driver: 'npc', bonk: 0,
+      ...v, kind: 'traffic', driver: 'npc', bonk: 0, drive: driveCar,
       x: horiz ? t : lane + dirSign * 10, y: horiz ? lane + dirSign * 10 : t,
       vx: horiz ? dirSign * speed : 0, vy: horiz ? 0 : dirSign * speed,
       dir: horiz ? (dirSign > 0 ? 0 : Math.PI) : (dirSign > 0 ? Math.PI / 2 : -Math.PI / 2),

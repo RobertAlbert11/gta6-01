@@ -19,6 +19,9 @@ function districtAt(gx, gy) {
   return null;
 }
 
+const NEON_WORDS = ['SOLARIS', 'HOTEL', 'CLUB VOLT', 'DINER', 'CASINO', 'NOODLE BAR', 'CINEMA', 'PALMS', 'LIQUOR', 'MOTEL'];
+const NEON_COLORS = ['#ff3bd4', '#3bfff2', '#fffb3b', '#7cff3b', '#ff7a3b', '#c43bff'];
+
 export function districtNameAt(x, y) {
   const d = districtAt(Math.floor(x / TILE), Math.floor(y / TILE));
   return d ? d.name : 'Solaris City';
@@ -57,13 +60,22 @@ export class World {
       const w = 60 + ((bx + i * 31) % 3) * 25;
       const h = 60 + ((by + i * 17) % 3) * 25;
       if (px + w > x0 + 240 || py + h > y0 + 240) continue;
-      const tall = d && d.name === 'Downtown Solaris' ? 3 + (i % 3) : 1 + (i % 2);
+      // vary height: downtown is skyscraper country, elsewhere low/mid-rise with occasional towers
+      let tall = d && d.name === 'Downtown Solaris' ? 3 + (i % 3) : 1 + (i % 2);
+      if (Math.random() < 0.15) tall += 2;
+      // vary color: per-building hue jitter away from the district tint
+      const c = parseInt(base.slice(1), 16);
+      const jr = ((bx * 31 + by * 17 + i * 53) % 60) - 30;
+      const jg = ((bx * 13 + by * 29 + i * 71) % 50) - 25;
+      const jb = ((bx * 7 + by * 37 + i * 91) % 60) - 30;
+      const varied = `rgb(${Math.max(0, Math.min(255, (c >> 16) + jr))},${Math.max(0, Math.min(255, ((c >> 8) & 255) + jg))},${Math.max(0, Math.min(255, (c & 255) + jb))})`;
       const shade = (k) => {
-        const c = parseInt(base.slice(1), 16);
         const r = Math.min(255, (c >> 16) + k), g = Math.min(255, ((c >> 8) & 255) + k), b = Math.min(255, (c & 255) + k);
         return `rgb(${r},${g},${b})`;
       };
-      this.buildings.push({ x: px, y: py, w, h, h3: tall, color: shade(-12 + i * 6), windows: true, roof: shade(20) });
+      const b = { x: px, y: py, w, h, h3: tall, color: varied, windows: true, roof: shade(20), neon: null };
+      if (tall >= 3) b.neon = { text: NEON_WORDS[(Math.random() * NEON_WORDS.length) | 0], color: NEON_COLORS[(Math.random() * NEON_COLORS.length) | 0] };
+      this.buildings.push(b);
       this.colliders.push({ x: px, y: py, w, h, solid: true });
     }
   }
@@ -148,6 +160,23 @@ export class World {
           for (let wx = b.x + 8; wx < b.x + b.w - 8; wx += 18) {
             if ((wx * 7 + wy * 13) % 5) ctx.fillRect(wx, wy, 8, 8);
           }
+        }
+      }
+      // neon signs glow only at night
+      if (b.neon) {
+        const night = this.game.daynight ? this.game.daynight.darkness() : 0;
+        if (night > 0.3) {
+          const glow = night * (0.75 + Math.sin(performance.now() / 350 + b.x) * 0.25);
+          ctx.save();
+          ctx.font = 'bold 11px "Segoe UI", Arial';
+          const tw = ctx.measureText(b.neon.text).width;
+          const sx = b.x + (b.w - tw) / 2;
+          ctx.globalAlpha = Math.min(1, glow);
+          ctx.fillStyle = b.neon.color;
+          ctx.shadowColor = b.neon.color;
+          ctx.shadowBlur = 10 * night;
+          ctx.fillText(b.neon.text, sx, b.y + 20);
+          ctx.restore();
         }
       }
     }
