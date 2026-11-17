@@ -41,6 +41,72 @@ export class Missions {
     this.eliminateNeeded = 0;
     this.offers = [];
     this.offerIndex = 0;
+    // side hustles: taxi fares & timed deliveries (repeatable, independent of story)
+    this.side = null;          // {type:'taxi'|'delivery', ...}
+    this.sideCooldown = 0;
+  }
+
+  // side hustles trigger when the player drives near a taxi stand / cargo depot
+  tryStartSide() {
+    const g = this.game;
+    const v = g.player.currentVehicle;
+    if (!v) return;
+    this.sideCooldown -= 1;
+    if (this.side || this.sideCooldown > 0) return;
+    const px = g.player.x, py = g.player.y;
+    const speed = Math.hypot(v.vx, v.vy);
+    if (speed > 45 && speed < 90 && g.world.isRoad(px, py) && Math.random() < 0.02) {
+      const taxi = v.color === '#c9b74f' && Math.random() < 0.5;
+      const dest = this.randomRoadPoint();
+      if (taxi) {
+        this.side = { type: 'taxi', tx: dest.x, ty: dest.y, fare: 60 + ((Math.random() * 90) | 0) };
+        g.hud.toast(`TAXI FARE — take the passenger to the fare pin ($${this.side.fare})`);
+      } else {
+        this.side = { type: 'delivery', tx: dest.x, ty: dest.y, limit: 40 + Math.random() * 30, elapsed: 0 };
+        g.hud.toast(`TIMED DELIVERY — get the package there in ${Math.round(this.side.limit)}s!`);
+      }
+      g.world.markers.push({ x: dest.x, y: dest.y, color: '#3bd4ff' });
+      g.audio.blip(880, 0.1);
+    }
+  }
+
+  randomRoadPoint() {
+    const g = this.game;
+    for (let t = 0; t < 24; t++) {
+      const x = (Math.random() * (WORLD_W - 320)) | 0, y = (Math.random() * (WORLD_H - 320)) | 0;
+      if (g.world.isRoad(x + 160, y + 160)) return { x: x + 160, y: y + 160 };
+    }
+    return { x: WORLD_W / 2, y: WORLD_H / 2 };
+  }
+
+  updateSide(dt) {
+    const g = this.game, s = this.side;
+    if (!s) return;
+    const v = g.player.currentVehicle;
+    const d = Math.hypot(g.player.x - s.tx, g.player.y - s.ty);
+    if (s.type === 'delivery') {
+      s.elapsed += dt;
+      if (s.elapsed > s.limit) { this.endSide('Delivery late — package spoiled'); return; }
+      if (v && d < 60 && Math.hypot(v.vx, v.vy) < 60) {
+        g.cash += 150; g.respect += 8; g.score += 150;
+        g.hud.toast(`Delivered on time! +$150 Respect +8`);
+        this.endSide(null);
+      }
+    } else {
+      if (v && d < 60 && Math.hypot(v.vx, v.vy) < 60) {
+        g.cash += s.fare; g.respect += 4; g.score += s.fare;
+        g.hud.toast(`Fare paid! +$${s.fare} Respect +4`);
+        this.endSide(null);
+      }
+    }
+  }
+
+  endSide(msg) {
+    const g = this.game;
+    if (msg) g.hud.toast(msg);
+    g.world.markers = g.world.markers.filter(mk => mk.color !== '#3bd4ff');
+    this.side = null;
+    this.sideCooldown = 20;
   }
 
   offerNext() {
@@ -70,6 +136,8 @@ export class Missions {
 
   update(dt) {
     const g = this.game, m = this.current;
+    this.tryStartSide();
+    this.updateSide(dt);
     if (!m || this.completed.has(m.id)) return;
     this.timer += dt;
 
@@ -97,6 +165,8 @@ export class Missions {
 
     // fail on death/bust
     if (g.state === 'busted' || g.state === 'wasted') this.fail('Mission failed');
+    // side hustles also abort on bust/waste
+    if (this.side && (g.state === 'busted' || g.state === 'wasted')) this.endSide('Hustle abandoned');
   }
 
   succeed() {

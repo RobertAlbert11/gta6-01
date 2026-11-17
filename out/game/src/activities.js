@@ -51,9 +51,11 @@ export class Activities {
   collectNearby() {
     if (this.nearby) {
       this.nearby.taken = true;
-      this.game.cash += 60; this.game.respect += 6;
-      this.game.hud.toast('Stash found! +$60 Respect +6');
-      this.game.audio.blip(1040, 0.12);
+      const n = this.stashes.filter(s => s.taken).length;
+      const bonus = Math.min(40, n * 5);   // escalating bonus per stash found
+      this.game.cash += 60 + bonus; this.game.respect += 6;
+      this.game.hud.toast(`Stash found! +$${60 + bonus} Respect +6 (${n}/8)`);
+      this.game.audio.pickup();
       return true;
     }
     return false;

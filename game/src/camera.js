@@ -23,7 +23,8 @@ export class Camera {
     this.zoom += (tz - this.zoom) * Math.min(1, dt * 3);
     this.shake = Math.max(0, this.shake - dt * 30);
     const sx = (Math.random() - 0.5) * this.shake, sy = (Math.random() - 0.5) * this.shake;
-    this.x = Math.max(0, Math.min(WORLD_W, this.x + sx * 0.1));
-    this.y = Math.max(0, Math.min(WORLD_H, this.y + sy * 0.1));
+    const half = 0.5 * Math.max(this.canvasW(), this.canvasH());
+    this.x = Math.max(half, Math.min(WORLD_W - half, this.x + sx * 0.1));
+    this.y = Math.max(half, Math.min(WORLD_H - half, this.y + sy * 0.1));
   }
 }

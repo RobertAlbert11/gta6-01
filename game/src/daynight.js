@@ -22,6 +22,8 @@ export class DayNight {
     return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
   }
 
+  isNight() { return this.darkness() > 0.5; }
+
   // 0 = full daylight, 1 = full night
   darkness() {
     const h = this.clock;

@@ -57,6 +57,7 @@ ui.resume.onclick = () => { game.state = 'playing'; ui.menu.classList.add('hidde
 addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && game.state === 'playing') { game.state = 'paused'; ui.resume.classList.remove('hidden'); showMenu(); }
   else if (e.key === 'Escape' && game.state === 'paused') { game.state = 'playing'; ui.menu.classList.add('hidden'); }
+  else if (e.key.toLowerCase() === 'p') { if (game.state === 'playing') { game.state = 'paused'; ui.resume.classList.remove('hidden'); } else if (game.state === 'paused') { game.state = 'playing'; ui.menu.classList.add('hidden'); } }
 });
 function showMenu() { ui.menu.classList.remove('hidden'); ui.play.textContent = game.save.loaded ? 'CONTINUE' : 'START GAME'; }
 

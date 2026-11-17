@@ -26,6 +26,7 @@ export class Save {
     g.score = d.score ?? 0;
     g.player.deaths = d.deaths ?? 0;
     g.player.busts = d.busts ?? 0;
+    g.time = d.playTime ?? 0;
     if (d.completed) for (const id of d.completed) g.missions.completed.add(id);
     g.hud.toast('Progress restored');
   }
@@ -44,6 +45,7 @@ export class Save {
         cash: g.cash, respect: g.respect, score: g.score,
         deaths: g.player.deaths, busts: g.player.busts,
         completed: [...g.missions.completed],
+        playTime: g.time,
       }));
     } catch (e) { /* storage may be unavailable */ }
   }

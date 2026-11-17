@@ -74,6 +74,10 @@ export class Audio {
 
   cash() { this.blip(880, 0.08, 'square', 0.12); setTimeout(() => this.blip(1320, 0.12, 'square', 0.12), 90); }
 
+  pickup() { this.blip(660, 0.06, 'triangle', 0.12); setTimeout(() => this.blip(990, 0.1, 'triangle', 0.1), 70); }
+
+  hurt() { this.blip(180, 0.15, 'sawtooth', 0.2); }
+
   update() {
     if (!this.enabled) return;
     const g = this.game, p = g.player;

@@ -11,6 +11,7 @@ export class Input {
       if (e.key.toLowerCase() === 'e') this._enterExit = true;
       if (e.key.toLowerCase() === 'f') this._fire = true;
       if (e.key === 'Tab') this._mapToggle = true;
+      if (e.key.toLowerCase() === 'p') this._pauseToggle = true;
     });
     addEventListener('keyup', (e) => this.keys.delete(e.key.toLowerCase()));
     addEventListener('mousemove', (e) => { this.mouse.x = e.clientX; this.mouse.y = e.clientY; });
@@ -32,4 +33,5 @@ export class Input {
   consumeEnterExit() { const v = this._enterExit; this._enterExit = false; return v; }
   consumeFire() { const v = this._fire; this._fire = false; return v; }
   consumeMapToggle() { const v = this._mapToggle; this._mapToggle = false; return v; }
+  consumePauseToggle() { const v = this._pauseToggle; this._pauseToggle = false; return v; }
 }

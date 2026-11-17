@@ -5,7 +5,9 @@ export class Combat {
     this.game = game;
     this.armed = true;
     this.ammo = 60;
+    this.magSize = 60;
     this.maxAmmo = 240;
+    this.reloadTime = 0;
     this.bullets = [];      // {x,y,dx,dy,life,speed}
     this.enemies = [];      // rival gang members
     this.spawnEnemies();
@@ -28,6 +30,19 @@ export class Combat {
     const g = this.game, p = g.player;
     const inp = g.input;
 
+    // reload: auto-refill magazine from reserve every 2.2s when empty
+    if (this.reloadTime > 0) {
+      this.reloadTime -= dt;
+      if (this.reloadTime <= 0 && this.ammo < this.magSize) {
+        const need = this.magSize - this.ammo;
+        const take = Math.min(need, this.maxAmmo);
+        this.ammo += take; this.maxAmmo -= take;
+        g.audio.blip(520, 0.08, 'square', 0.1);
+      }
+    } else if (this.ammo <= 0 && this.maxAmmo > 0) {
+      this.reloadTime = 2.2;
+      g.hud.toast('Reloading...');
+    }
     // firing
     if (inp.consumeFire() && this.armed && this.ammo > 0 && p.fireCooldown <= 0) {
       p.fireCooldown = 0.18;
@@ -130,9 +145,9 @@ export class Combat {
       ctx.stroke();
     }
     // bullets as tracers
-    ctx.strokeStyle = '#ffe9a0';
     ctx.lineWidth = 2;
     for (const b of this.bullets) {
+      ctx.strokeStyle = b.hostile ? '#ff6a6a' : '#ffe9a0';
       ctx.beginPath();
       ctx.moveTo(b.x, b.y);
       ctx.lineTo(b.x - b.dx * 12, b.y - b.dy * 12);

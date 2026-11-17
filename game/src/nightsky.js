@@ -31,6 +31,12 @@ export class NightSky {
       ctx.arc(s.x * canvas.width, s.y * canvas.height, s.r, 0, 7);
       ctx.fill();
     }
+    // shooting star (rare, deep night only)
+    if (dark > 0.9 && Math.random() < 0.004) {
+      const sx = Math.random() * canvas.width, sy = Math.random() * canvas.height * 0.3;
+      ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + 40, sy + 14); ctx.stroke();
+    }
     // crescent moon
     ctx.globalAlpha = Math.min(0.9, dark * 0.85);
     const mx = canvas.width * 0.82, my = canvas.height * 0.1;

@@ -45,6 +45,15 @@ export class Minimap {
       c.beginPath(); c.arc(clamp(sx), clamp(sy), 4, 0, 7); c.fill();
     }
 
+    // activity stash dots (green)
+    for (const s of g.activities.stashes) {
+      if (s.taken) continue;
+      const sx = (s.x - px) * scale + SIZE / 2, sy = (s.y - py) * scale + SIZE / 2;
+      if (sx < 0 || sx > SIZE || sy < 0 || sy > SIZE) continue;
+      c.fillStyle = '#4fc96f';
+      c.beginPath(); c.arc(sx, sy, 3, 0, 7); c.fill();
+    }
+
     // police dots
     for (const cop of g.police.cars) {
       if (cop.driver === 'player') continue;

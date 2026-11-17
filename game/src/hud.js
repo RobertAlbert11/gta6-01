@@ -110,6 +110,16 @@ export class Hud {
       ctx.restore();
     }
 
+    // low-health vignette
+    if (g.player.health < 30) {
+      const pulse = 0.25 + 0.15 * Math.sin(g.time * 6);
+      const grd = ctx.createRadialGradient(w/2, h/2, h*0.3, w/2, h/2, h*0.75);
+      grd.addColorStop(0, 'rgba(200,0,0,0)');
+      grd.addColorStop(1, `rgba(200,0,0,${pulse})`);
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, 0, w, h);
+    }
+
     // toasts (bottom-center above minimap)
     ctx.save();
     ctx.font = '15px "Segoe UI", Arial';

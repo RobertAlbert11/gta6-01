@@ -19,6 +19,10 @@ export class Player {
 
   update(dt) {
     const g = this.game, inp = g.input, w = g.world;
+    // slow health regen when healthy and on foot, out of wanted level
+    if (this.health > 0 && this.health < 100 && !g.police.level && !this.currentVehicle) {
+      this.health = Math.min(100, this.health + dt * 2);
+    }
     this.fireCooldown = Math.max(0, this.fireCooldown - dt);
     if (inp.consumeEnterExit()) {
       if (this.currentVehicle) this.exitVehicle();
@@ -99,7 +103,7 @@ export class Player {
   }
 
   respawn() {
-    this.health = 100; this.armor = 0;
+    this.health = 100; this.armor = 25;
     this.currentVehicle = null;
     this.x = 4 * TILE + 80; this.y = 6 * TILE;
     this.vx = this.vy = 0;

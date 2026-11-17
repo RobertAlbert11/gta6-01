@@ -8,10 +8,12 @@ export class Effects {
     this.scrnColor = '';
   }
 
+  _push(p) { if (this.particles.length < 600) this._push(p); }
+
   sparkBurst(x, y, n = 14) {
     for (let i = 0; i < n; i++) {
       const a = Math.random() * Math.PI * 2, spd = 80 + Math.random() * 180;
-      this.particles.push({ x, y, vx: Math.cos(a) * spd, vy: Math.sin(a) * spd,
+      this._push({ x, y, vx: Math.cos(a) * spd, vy: Math.sin(a) * spd,
         life: 0.5 + Math.random() * 0.4, maxLife: 0.9, color: Math.random() < 0.5 ? '#ffdd60' : '#ff8820', size: 2 + Math.random() * 3 });
     }
   }
@@ -19,7 +21,7 @@ export class Effects {
   bloodPuff(x, y, n = 8) {
     for (let i = 0; i < n; i++) {
       const a = Math.random() * Math.PI * 2, spd = 30 + Math.random() * 80;
-      this.particles.push({ x, y, vx: Math.cos(a) * spd, vy: Math.sin(a) * spd,
+      this._push({ x, y, vx: Math.cos(a) * spd, vy: Math.sin(a) * spd,
         life: 0.7 + Math.random() * 0.5, maxLife: 1.2, color: '#cc1f1f', size: 3 + Math.random() * 4 });
     }
   }
@@ -28,7 +30,7 @@ export class Effects {
     const { cos, sin } = Math;
     for (let i = 0; i < 6; i++) {
       const a = dir + (Math.random() - 0.5) * 0.8, spd = 120 + Math.random() * 80;
-      this.particles.push({ x, y, vx: cos(a) * spd, vy: sin(a) * spd,
+      this._push({ x, y, vx: cos(a) * spd, vy: sin(a) * spd,
         life: 0.06 + Math.random() * 0.08, maxLife: 0.14, color: '#fff5a0', size: 4 + Math.random() * 3 });
     }
   }
@@ -36,7 +38,7 @@ export class Effects {
   smokeCloud(x, y, n = 10) {
     for (let i = 0; i < n; i++) {
       const a = Math.random() * Math.PI * 2, spd = 10 + Math.random() * 30;
-      this.particles.push({ x, y, vx: Math.cos(a) * spd, vy: Math.sin(a) * spd,
+      this._push({ x, y, vx: Math.cos(a) * spd, vy: Math.sin(a) * spd,
         life: 1.5 + Math.random(), maxLife: 2.5, color: 'rgba(80,80,90,0.6)', size: 8 + Math.random() * 12 });
     }
   }
