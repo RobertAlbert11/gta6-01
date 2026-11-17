@@ -87,7 +87,12 @@ export class Player {
   exitVehicle() {
     const g = this.game;
     const v = this.currentVehicle;
-    if (v) { v.driver = null; v.vx *= 0.2; v.vy *= 0.2; }
+    if (v) {
+      // bailing out at speed hurts
+      const spd = Math.hypot(v.vx, v.vy);
+      if (spd > 150) this.damage(Math.min(25, (spd - 150) * 0.15));
+      v.driver = null; v.vx *= 0.2; v.vy *= 0.2;
+    }
     this.currentVehicle = null;
     // step out to the side; if that spot is inside a building, try the other side
     const side = (v ? v.dir + Math.PI / 2 : 0);

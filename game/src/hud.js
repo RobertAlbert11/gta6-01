@@ -13,11 +13,9 @@ export class Hud {
     if (this.toasts.length > 4) this.toasts.shift();
   }
 
-  // time-based flash decay instead of assuming 60fps frame delta
   update(dt) {
     if (this.flash > 0) this.flash -= dt;
   }
-
   flashWanted() { this.flash = 1.2; }
 
   wasted() {
@@ -45,7 +43,9 @@ export class Hud {
     }, 2500);
   }
 
-  update() { /* toasts expire on draw */ }
+  update(dt) {
+    if (this.flash > 0) this.flash -= dt;
+  }
 
   draw(ctx, canvas) {
     const g = this.game;

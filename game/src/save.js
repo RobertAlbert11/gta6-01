@@ -29,6 +29,7 @@ export class Save {
     g.player.deaths = d.deaths ?? 0;
     g.player.busts = d.busts ?? 0;
     g.time = d.playTime ?? 0;
+    this.lastSave = g.time;
     if (d.completed) for (const id of d.completed) g.missions.completed.add(id);
     g.hud.toast('Progress restored');
   }

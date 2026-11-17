@@ -37,6 +37,7 @@ export class Police {
 
   update(dt) {
     const g = this.game, p = g.player;
+    const px = p.x, py = p.y;
     // decay heat slowly when not committing crimes
     if (g.time - (this.lastCrime?.t ?? -99) > 8) {
       this.heat = Math.max(0, this.heat - dt * 0.12);
@@ -78,7 +79,6 @@ export class Police {
     });
 
     // chase AI: drive straight at player, simple avoid-free pursuit
-    const px = p.x, py = p.y;
     for (const c of this.cars) {
       if (c.driver === 'player') continue;
       const dx = px - c.x, dy = py - c.y, d = Math.hypot(dx, dy) || 1;
